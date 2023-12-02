@@ -127,17 +127,27 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <div>
-        <input
-          type="text"
-          placeholder="Search"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={handleSearchKeyDown}
-        />
+      <div className="header">
+        <div>
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
 
-        <button className="search-icon" onClick={handleSearch}>
-          <FontAwesomeIcon icon={faSearch} />
+          <button className="search-icon" onClick={handleSearch}>
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        </div>
+
+        <button
+          className="delete-selected"
+          onClick={handleDeleteSelected}
+          disabled={selectedRows.length === 0}
+        >
+          <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
 
@@ -223,15 +233,13 @@ const AdminDashboard = () => {
         </tbody>
       </table>
 
-      <button
-        className="delete-selected"
-        onClick={handleDeleteSelected}
-        disabled={selectedRows.length === 0}
-      >
-        Delete Selected
-      </button>
-
       <div className="pagination">
+        <button
+          onClick={() => selectPageHandler(1)}
+          className={pages > 1 ? "" : "pagination__disable first-page"}
+        >
+          ⏪
+        </button>
         <button
           onClick={() => selectPageHandler(pages - 1)}
           className={pages > 1 ? "" : "pagination__disable previous-page"}
@@ -256,6 +264,18 @@ const AdminDashboard = () => {
           }
         >
           ▶️
+        </button>
+        <button
+          onClick={() =>
+            selectPageHandler(Math.ceil(filteredUsers.length / 10))
+          }
+          className={
+            pages < Math.ceil(filteredUsers.length / 10)
+              ? ""
+              : "pagination__disable last-page"
+          }
+        >
+          ⏩
         </button>
       </div>
     </>

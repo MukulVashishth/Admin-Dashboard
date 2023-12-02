@@ -1,3 +1,13 @@
+* {
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 4rem;
+}
+
 .delete {
   color: rgb(220, 57, 57);
 }
@@ -81,8 +91,8 @@ button.delete-selected {
   padding: 8px;
   margin: 10px;
   cursor: pointer;
-  width: 10rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   font-size: 1rem;
 }
 
@@ -108,7 +118,7 @@ button.delete-selected:disabled {
 }
 
 .pagination__disable {
-  opacity: 0;
+  opacity: 0.5;
 }
 
 .pagination__selected {
