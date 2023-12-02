@@ -7,6 +7,8 @@ const AdminDashboard = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
+  const [pages, setPages] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +51,20 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleSelectAllChange = () => {
+    setSelectAllChecked((prev) => !prev);
+
+    if (!selectAllChecked) {
+      const pageStartIndex = (pages - 1) * 10;
+      const pageEndIndex = pages * 10;
+      const currentPageRows = filteredUsers.slice(pageStartIndex, pageEndIndex);
+      const currentPageUserIds = currentPageRows.map((user) => user.id);
+      setSelectedRows(currentPageUserIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
   const handleDeleteSelected = () => {
     const updatedUsers = users.filter(
       (user) => !selectedRows.includes(user.id)
@@ -56,6 +72,19 @@ const AdminDashboard = () => {
     setUsers(updatedUsers);
     setFilteredUsers(updatedUsers);
     setSelectedRows([]);
+  };
+
+  const selectPageHandler = (selectedPage) => {
+    const totalPages = Math.ceil(filteredUsers.length / 10);
+
+    if (
+      selectedPage >= 1 &&
+      selectedPage <= totalPages &&
+      selectedPage !== pages
+    ) {
+      setPages(selectedPage);
+      setSelectAllChecked(false);
+    }
   };
 
   return (
@@ -77,7 +106,11 @@ const AdminDashboard = () => {
       <table>
         <thead>
           <th>
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={selectAllChecked}
+              onChange={handleSelectAllChange}
+            />
           </th>
           <th>Name</th>
           <th>Email</th>
@@ -86,7 +119,7 @@ const AdminDashboard = () => {
         </thead>
 
         <tbody>
-          {filteredUsers.map((user) => (
+          {filteredUsers.slice(pages * 10 - 10, pages * 10).map((user) => (
             <tr
               key={user.id}
               className={selectedRows.includes(user.id) ? "selected-row" : ""}
@@ -122,6 +155,36 @@ const AdminDashboard = () => {
       >
         Delete Selected
       </button>
+
+      <div>
+        <button
+          onClick={() => selectPageHandler(pages - 1)}
+          className={pages > 1 ? "" : "pagination__disable previous-page"}
+        >
+          ◀️
+        </button>
+        {[...Array(Math.ceil(filteredUsers.length / 10))].map((_, i) => {
+          return (
+            <button
+              key={i}
+              className={pages === i + 1 ? "pagination__selected " : ""}
+              onClick={() => selectPageHandler(i + 1)}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
+        <button
+          onClick={() => selectPageHandler(pages + 1)}
+          className={
+            pages < Math.ceil(filteredUsers.length / 10)
+              ? ""
+              : "pagination__disable next-page"
+          }
+        >
+          ▶️
+        </button>
+      </div>
     </>
   );
 };
