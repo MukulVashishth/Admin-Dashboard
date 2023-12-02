@@ -1,3 +1,66 @@
 .delete {
   color: rgb(220, 57, 57);
 }
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+div {
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  margin-right: 5px;
+}
+
+button.search-icon {
+  padding: 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+tr.selected-row {
+  background-color: #d3d3d3;
+}
+
+td:last-child {
+  text-align: center;
+}
+
+button.edit,
+button.delete {
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+button.delete-selected {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+button.delete-selected:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

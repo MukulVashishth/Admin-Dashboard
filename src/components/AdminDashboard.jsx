@@ -6,6 +6,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +39,25 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCheckboxChange = (userId) => {
+    setSelectedRows((prevSelectedRows) => {
+      if (prevSelectedRows.includes(userId)) {
+        return prevSelectedRows.filter((id) => id !== userId);
+      } else {
+        return [...prevSelectedRows, userId];
+      }
+    });
+  };
+
+  const handleDeleteSelected = () => {
+    const updatedUsers = users.filter(
+      (user) => !selectedRows.includes(user.id)
+    );
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+    setSelectedRows([]);
+  };
+
   return (
     <>
       <div>
@@ -67,9 +87,17 @@ const AdminDashboard = () => {
 
         <tbody>
           {filteredUsers.map((user) => (
-            <tr key={user.id}>
+            <tr
+              key={user.id}
+              className={selectedRows.includes(user.id) ? "selected-row" : ""}
+            >
               <td>
-                <input type="checkbox" className="row-checkbox"></input>
+                <input
+                  type="checkbox"
+                  className="row-checkbox"
+                  checked={selectedRows.includes(user.id)}
+                  onChange={() => handleCheckboxChange(user.id)}
+                ></input>
               </td>
               <td>{user.name}</td>
               <td>{user.email}</td>
@@ -86,6 +114,14 @@ const AdminDashboard = () => {
           ))}
         </tbody>
       </table>
+
+      <button
+        className="delete-selected"
+        onClick={handleDeleteSelected}
+        disabled={selectedRows.length === 0}
+      >
+        Delete Selected
+      </button>
     </>
   );
 };
