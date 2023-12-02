@@ -9,6 +9,9 @@ const AdminDashboard = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [pages, setPages] = useState(1);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editedUserName, setEditedUserName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,6 +75,32 @@ const AdminDashboard = () => {
     setUsers(updatedUsers);
     setFilteredUsers(updatedUsers);
     setSelectedRows([]);
+    setEditingUserId(null);
+  };
+
+  const handleEdit = (userId, userName, userEmail) => {
+    setEditingUserId(userId);
+    setEditedUserName(userName);
+    setEditedEmail(userEmail);
+  };
+
+  const handleSave = () => {
+    const updatedUsers = users.map((user) => {
+      if (user.id === editingUserId) {
+        return { ...user, name: editedUserName, email: editedEmail }; // Update email as well
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+    setEditingUserId(null);
+    setEditedUserName("");
+    setEditedEmail("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUserId(null);
+    setEditedUserName("");
   };
 
   const selectPageHandler = (selectedPage) => {
@@ -84,7 +113,16 @@ const AdminDashboard = () => {
     ) {
       setPages(selectedPage);
       setSelectAllChecked(false);
+      setSelectedRows([]);
+      setEditingUserId(null);
+      setEditedUserName("");
     }
+  };
+
+  const handleDeleteRow = (userId) => {
+    const updatedUsers = users.filter((user) => user.id !== userId);
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
   };
 
   return (
@@ -130,18 +168,55 @@ const AdminDashboard = () => {
                   className="row-checkbox"
                   checked={selectedRows.includes(user.id)}
                   onChange={() => handleCheckboxChange(user.id)}
-                ></input>
+                />
               </td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
+              <td>
+                {editingUserId === user.id ? (
+                  <input
+                    value={editedUserName}
+                    onChange={(e) => setEditedUserName(e.target.value)}
+                  />
+                ) : (
+                  user.name
+                )}
+              </td>
+              <td>
+                {editingUserId === user.id ? (
+                  <input
+                    value={editedEmail}
+                    onChange={(e) => setEditedEmail(e.target.value)}
+                  />
+                ) : (
+                  user.email
+                )}
+              </td>
               <td>{user.role}</td>
               <td>
-                <button className="edit">
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
-                <button className="delete">
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
+                {editingUserId === user.id ? (
+                  <>
+                    <button className="save" onClick={handleSave}>
+                      Save
+                    </button>
+                    <button className="cancel" onClick={handleCancelEdit}>
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="edit"
+                      onClick={() => handleEdit(user.id, user.name, user.email)}
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      className="delete"
+                      onClick={() => handleDeleteRow(user.id)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
@@ -156,24 +231,22 @@ const AdminDashboard = () => {
         Delete Selected
       </button>
 
-      <div>
+      <div className="pagination">
         <button
           onClick={() => selectPageHandler(pages - 1)}
           className={pages > 1 ? "" : "pagination__disable previous-page"}
         >
           ◀️
         </button>
-        {[...Array(Math.ceil(filteredUsers.length / 10))].map((_, i) => {
-          return (
-            <button
-              key={i}
-              className={pages === i + 1 ? "pagination__selected " : ""}
-              onClick={() => selectPageHandler(i + 1)}
-            >
-              {i + 1}
-            </button>
-          );
-        })}
+        {[...Array(Math.ceil(filteredUsers.length / 10))].map((_, i) => (
+          <button
+            key={i}
+            className={pages === i + 1 ? "pagination__selected" : ""}
+            onClick={() => selectPageHandler(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
         <button
           onClick={() => selectPageHandler(pages + 1)}
           className={
